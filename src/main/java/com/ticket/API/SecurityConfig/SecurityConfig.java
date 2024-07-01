@@ -32,8 +32,8 @@ public class SecurityConfig {
                             .requestMatchers("/user/**").hasRole("ADMIN")
                             .requestMatchers("/notif/**").hasRole("ADMIN")
                             .requestMatchers("/BDCon/createBdCon", "BDCon/deleteBDCon/", "BDCon/deleteBDCon/", "/ticket/Ouvrir_ticket/**", "/reponse/**").hasAnyRole("FORMATEUR", "ADMIN")
-                            .requestMatchers("/BDCon/AfficherBDCon/", "/ticket/Afficher_Ticket").hasAnyRole("FORMATEUR", "APPRENANT", "ADMIN")
-                            .requestMatchers("/ticket/createTicket", "/ticket/delete/**", "/ticket/updateTicket", "/ticket/Trier_ticket", "/reponse/AfficherReponse").hasAnyRole("APPRENANT", "ADMIN")
+                            .requestMatchers("/BDCon/AfficherBDCon/","/BDCon/AfficherBDCons", "/ticket/Afficher_Ticket").hasAnyRole("FORMATEUR", "APPRENANT", "ADMIN")
+                            .requestMatchers("/ticket/createTicket", "/ticket/delete/**", "/ticket/updateTicket/**", "/ticket/Trier_ticket", "/reponse/AfficherReponse").hasAnyRole("APPRENANT", "ADMIN")
                             .anyRequest().authenticated();
                 })
                 .httpBasic(Customizer.withDefaults())

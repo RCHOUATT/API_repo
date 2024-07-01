@@ -15,8 +15,8 @@ public class NotifConfig {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        mailSender.setUsername("");
-        mailSender.setPassword("");
+        mailSender.setUsername("cheickhamedouattara865@gmail.com");
+        mailSender.setPassword("dvctryjlnltoogkk");
 
         // Enable TLS settings
         Properties props = mailSender.getJavaMailProperties();

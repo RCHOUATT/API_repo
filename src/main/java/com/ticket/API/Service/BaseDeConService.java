@@ -18,4 +18,7 @@ public interface BaseDeConService {
 
     //Les methodes pour Afficher une base de connaissance.
     List<BaseDeCon> GetBaseDeCon(Long id);
+
+    //Les methodes pour Afficher les bases de connaissance.
+    List<BaseDeCon> GetBaseDeCons();
 }

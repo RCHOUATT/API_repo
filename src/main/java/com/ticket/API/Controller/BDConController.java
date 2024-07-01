@@ -38,10 +38,17 @@ public class BDConController {
         return baseDeConService.DeleteBaseDeCon(id);
     }
 
-    @Operation(description = "Ce point d'entré permet d'afficher les données de la base de connaissance")
+    @Operation(description = "Ce point d'entré permet d'afficher une donnée de la base de connaissance")
     @GetMapping("/AfficherBDCon/{id}")
     List<BaseDeCon> AfficherBDCon(@PathVariable Long id){
         return baseDeConService.GetBaseDeCon(id);
     }
+
+    @Operation(description = "Ce point d'entré permet d'afficher les données de la base de connaissance")
+    @GetMapping("/AfficherBDCons")
+    List<BaseDeCon> GetBaseDeCons(){
+        return baseDeConService.GetBaseDeCons();
+    }
+
 
 }

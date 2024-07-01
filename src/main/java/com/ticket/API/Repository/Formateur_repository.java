@@ -1,7 +1,6 @@
 package com.ticket.API.Repository;
 
 import com.ticket.API.Enum.Roles;
-import com.ticket.API.Module.Apprenant;
 import com.ticket.API.Module.Formateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

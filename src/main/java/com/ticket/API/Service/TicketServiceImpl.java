@@ -4,6 +4,7 @@ import com.ticket.API.Enum.Roles;
 import com.ticket.API.Enum.StatutTicket;
 import com.ticket.API.Module.*;
 import com.ticket.API.Repository.Apprenat_repository;
+import com.ticket.API.Repository.Notif_repository;
 import com.ticket.API.Repository.Ticket_repository;
 import com.ticket.API.Repository.User_repository;
 import jakarta.mail.MessagingException;
@@ -25,6 +26,7 @@ public class TicketServiceImpl implements TicketService {
     private User_repository user_repository;
     private Apprenat_repository apprenat_repository;
     private NotifService notifService;
+    private Notif_repository notif_repository;
 
     public String getConnectedUser_usename() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -32,7 +34,7 @@ public class TicketServiceImpl implements TicketService {
 
         if (principal instanceof UserDetails) {
             username = ((UserDetails)principal).getUsername();
-            return user_repository  .findByEmail(username).get().getNom();
+            return user_repository.findByEmail(username).get().getNom();
         } else {
             username = principal.toString();
         }
@@ -71,8 +73,8 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public Ticket CreerTicket(Ticket ticket) {
         List<Utilisateurs> utilisateurs = user_repository.findByRole(Roles.FORMATEUR);
+        Notification notification = new Notification();
         utilisateurs.forEach(p->{
-            Notification notification = new Notification();
             notification.setTicket(ticket);
             notification.setNotif_body("Vous avez reçu un nouveau ticket de la part de " + getConnectedUser_usename());
             notification.setDest_email((p.getEmail()));
@@ -86,17 +88,19 @@ public class TicketServiceImpl implements TicketService {
         ticket.setApprenant(getConnectedApprenant());
         ticket.setStatut(StatutTicket.ENVOYER);
         ticket.setMiseAJ(new Date());
-        return ticket_repository.save(ticket);
+        Ticket newTicket = ticket_repository.save(ticket);
+        notification.setTicket(ticket);
+        notif_repository.save(notification);
+        return newTicket;
     }
 
     @Override
     public Ticket UpdateTicket(Long id, Ticket ticket) {
-
+        Notification notification = new Notification();
         List<Utilisateurs> utilisateurs = user_repository.findByRole(Roles.FORMATEUR);
         utilisateurs.forEach(p->{
-            Notification notification = new Notification();
             notification.setTicket(ticket);
-            notification.setNotif_body("Le ticket N° " + ticket.getId() + "a été modifié ");
+            notification.setNotif_body("Le ticket N° " + id + " a été modifié ");
             notification.setDest_email((p.getEmail()));
             notification.setNotif_subject("Modification d'un ticket");
             try {
@@ -109,12 +113,24 @@ public class TicketServiceImpl implements TicketService {
         return ticket_repository.findById(id)
                 .map(p->{
                     p.setApprenant(getConnectedApprenant());
-                    p.setQuestion(ticket.getQuestion());
-                    p.setCategory(ticket.getCategory());
-                    p.setTitre(ticket.getTitre());
-                    p.setStatut(ticket.getStatut());
+
+                    if(ticket.getQuestion() != null){
+                        p.setQuestion(ticket.getQuestion());}
+
+                    if(ticket.getCategory() != null){
+                        p.setCategory(ticket.getCategory());}
+
+                    if(ticket.getTitre() != null) {
+                        p.setTitre(ticket.getTitre());
+                    }
+                    if(ticket.getStatut() != null) {
+                        p.setStatut(ticket.getStatut());
+                    }
                     p.setMiseAJ(new Date());
-                    return ticket_repository.save(p);
+                    Ticket updateTicket = ticket_repository.save(p);
+                    notification.setTicket(ticket);
+                    notif_repository.save(notification);
+                    return updateTicket;
                 }).orElseThrow(()->new RuntimeException("La ticket " + id + " n'existe pas"));
     }
 
@@ -122,10 +138,10 @@ public class TicketServiceImpl implements TicketService {
     public String SupprimerTicket(Long id) {
         List<Utilisateurs> utilisateurs = user_repository.findByRole(Roles.FORMATEUR);
         Optional<Ticket> ticket = ticket_repository.findById(id);
+        Notification notification = new Notification();
         utilisateurs.forEach(p->{
-            Notification notification = new Notification();
             notification.setTicket(ticket.orElseThrow());
-            notification.setNotif_body("Le ticket N° " + id + "a été modifié ");
+            notification.setNotif_body("Le ticket N° " + id + " a été supprimé ");
             notification.setDest_email((p.getEmail()));
             notification.setNotif_subject("Suppréssion d'un Ticket");
             try {
@@ -135,6 +151,8 @@ public class TicketServiceImpl implements TicketService {
             }
         });
         ticket_repository.deleteById(id);
+        notification.setTicket(ticket.get());
+        notif_repository.save(notification);
         return "La ticket " + id + " n'existe pas";
     }
 

@@ -3,7 +3,10 @@ package com.ticket.API.Service;
 import com.ticket.API.Module.BaseDeCon;
 import com.ticket.API.Module.Formateur;
 import com.ticket.API.Repository.BaseCon_repository;
+import com.ticket.API.Repository.Formateur_repository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +16,24 @@ import java.util.List;
 public class BaseDeConServiceImpl implements BaseDeConService{
 
     private BaseCon_repository baseCon_repository;
+    private Formateur_repository formateur_repository;
+
+    public Formateur getConnectedUser_usename() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+            return formateur_repository.findByEmail(username);
+        } else {
+            username = principal.toString();
+        }
+        return formateur_repository.findByEmail(username);
+    }
 
     @Override
     public BaseDeCon CreateBaseDeCon(BaseDeCon baseDeCon) {
+        baseDeCon.setFormateur(getConnectedUser_usename());
         return baseCon_repository.save(baseDeCon);
     }
 
@@ -39,5 +57,10 @@ public class BaseDeConServiceImpl implements BaseDeConService{
     @Override
     public List<BaseDeCon> GetBaseDeCon(Long id) {
         return List.of();
+    }
+
+    @Override
+    public List<BaseDeCon> GetBaseDeCons() {
+        return baseCon_repository.findAll();
     }
 }

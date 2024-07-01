@@ -4,7 +4,6 @@ import com.ticket.API.Module.*;
 import com.ticket.API.Repository.Formateur_repository;
 import com.ticket.API.Repository.Reponse_repository;
 import com.ticket.API.Repository.Ticket_repository;
-import com.ticket.API.Repository.User_repository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

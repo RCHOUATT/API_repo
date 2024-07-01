@@ -1,5 +1,6 @@
 package com.ticket.API.Service;
 
+import com.ticket.API.Enum.Roles;
 import com.ticket.API.Module.Admin;
 import com.ticket.API.Module.Apprenant;
 import com.ticket.API.Module.Formateur;
@@ -22,18 +23,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public Formateur CreateFormateur(Formateur formateur) {
         formateur.setPassword(passwordEncoder.encode(formateur.getPassword()));
+        formateur.setRole(Roles.FORMATEUR);
         return user_repository.save(formateur);
     }
 
     @Override
     public Admin CreateAdmin(Admin admin) {
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        admin.setRole(Roles.ADMIN);
         return user_repository.save(admin);
     }
 
     @Override
     public Apprenant CreateApprenant(Apprenant apprenant) {
         apprenant.setPassword(passwordEncoder.encode(apprenant.getPassword()));
+        apprenant.setRole(Roles.APPRENANT);
         return user_repository.save(apprenant);
     }
 

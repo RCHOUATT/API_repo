@@ -1,7 +1,9 @@
 package com.ticket.API.Service;
 
 import com.ticket.API.Enum.Roles;
+import com.ticket.API.Enum.StatutTicket;
 import com.ticket.API.Module.*;
+import com.ticket.API.Repository.Apprenat_repository;
 import com.ticket.API.Repository.Ticket_repository;
 import com.ticket.API.Repository.User_repository;
 import jakarta.mail.MessagingException;
@@ -21,6 +23,7 @@ public class TicketServiceImpl implements TicketService {
 
     private Ticket_repository ticket_repository;
     private User_repository user_repository;
+    private Apprenat_repository apprenat_repository;
     private NotifService notifService;
 
     public String getConnectedUser_usename() {
@@ -29,12 +32,26 @@ public class TicketServiceImpl implements TicketService {
 
         if (principal instanceof UserDetails) {
             username = ((UserDetails)principal).getUsername();
-            return user_repository.findByEmail(username).get().getNom();
+            return user_repository  .findByEmail(username).get().getNom();
         } else {
             username = principal.toString();
         }
         return user_repository.findByEmail(username).get().getNom();
     }
+
+    public Apprenant getConnectedApprenant() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+            return apprenat_repository .findByEmail(username);
+        } else {
+            username = principal.toString();
+        }
+        return apprenat_repository.findByEmail(username);
+    }
+
     /*public String getConnectedUser_id() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String id;
@@ -66,12 +83,14 @@ public class TicketServiceImpl implements TicketService {
                 throw new RuntimeException(e);
             }
         });
+        ticket.setApprenant(getConnectedApprenant());
+        ticket.setStatut(StatutTicket.ENVOYER);
+        ticket.setMiseAJ(new Date());
         return ticket_repository.save(ticket);
     }
 
     @Override
     public Ticket UpdateTicket(Long id, Ticket ticket) {
-        String connectedUser = getConnectedUser_usename();
 
         List<Utilisateurs> utilisateurs = user_repository.findByRole(Roles.FORMATEUR);
         utilisateurs.forEach(p->{
@@ -89,7 +108,7 @@ public class TicketServiceImpl implements TicketService {
 
         return ticket_repository.findById(id)
                 .map(p->{
-                    //p.setApprenant((Apprenant) connectedUser);
+                    p.setApprenant(getConnectedApprenant());
                     p.setQuestion(ticket.getQuestion());
                     p.setCategory(ticket.getCategory());
                     p.setTitre(ticket.getTitre());

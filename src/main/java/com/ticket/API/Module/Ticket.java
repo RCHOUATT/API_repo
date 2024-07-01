@@ -1,7 +1,6 @@
 package com.ticket.API.Module;
 
 import com.ticket.API.Enum.CategoryTicket;
-import com.ticket.API.Enum.Roles;
 import com.ticket.API.Enum.StatutTicket;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,7 +9,6 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Setter
@@ -40,4 +38,7 @@ public class Ticket {
 
     private Date creationDate = new Date();
     private Date miseAJ;
+
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private Reponse responses;
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @Tag(name ="Notification", description = "La notification fait référence à un document écrit qui est destiné" +
         " à informer une personne d'une règlementation, ou d'une information légale importante.")
-
 public class NotifController {
 
     private NotifService notifService;
